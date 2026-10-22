@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>麦麦积分体检 · MCD Points Butler</title>
+<meta name="description" content="麦当劳积分一站式管家——积分体检、过期预警、抽奖性价比、商城最优兑换。基于麦当劳官方 MCP。">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --yellow:#FFC72C;
+  --yellow-deep:#EEB111;
+  --ink:#231F20;
+  --ink-2:#6E6A66;
+  --ink-3:#A8A39D;
+  --bg:#F5F3EF;
+  --card:#fff;
+  --line:#EDEAE3;
+  --red:#E03B26;
+  --red-bg:#FDEBE7;
+  --amber:#B26A00;
+  --amber-bg:#FFF3DF;
+  --green:#1B7F4C;
+  --green-bg:#E4F3EA;
+  --gray:#7A7570;
+  --gray-bg:#F0EEEA;
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:var(--bg); color:var(--ink); line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1060px;margin:0 auto;padding:44px 22px 72px}
+
+/* ══ 顶部 ══ */
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:13px}
+.mark{width:50px;height:50px;background:var(--yellow);border-radius:16px;display:flex;align-items:center;justify-content:center;box-shadow:0 5px 18px rgba(255,199,44,.42)}
+h1{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.tagline{font-size:13px;color:var(--ink-3);margin-top:4px;font-weight:500}
+.pill{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);font-size:12.5px;color:var(--ink-2);padding:8px 15px;border-radius:100px;font-weight:500}
+.pill i{width:6px;height:6px;border-radius:50%;background:#34A853;display:block}
+
+/* ══ 剪影入口区（仿小程序首页）══ */
+.entries{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;margin-bottom:22px}
+@media(max-width:760px){.entries{grid-template-columns:repeat(2,1fr)}}
+
+.entry{
+  position:relative; height:112px; border:none; border-radius:20px; cursor:pointer;
+  background:var(--yellow); overflow:hidden; font-family:inherit; text-align:left;
+  transition:transform .16s cubic-bezier(.3,0,.2,1), box-shadow .16s, background .16s;
+  box-shadow:0 3px 0 rgba(0,0,0,.055), 0 8px 20px rgba(0,0,0,.05);
+}
+.entry:hover{transform:translateY(-3px);box-shadow:0 5px 0 rgba(0,0,0,.06),0 14px 28px rgba(0,0,0,.09)}
+.entry:active{transform:translateY(1px) scale(.985);box-shadow:0 1px 0 rgba(0,0,0,.06)}
+
+/* 剪影：贴右下角、溢出裁切、纯色填充 */
+.entry .silh{
+  position:absolute; right:-8px; bottom:-10px;
+  opacity:.9; pointer-events:none;
+  transition:transform .22s cubic-bezier(.3,0,.2,1);
+}
+.entry:hover .silh{transform:scale(1.07) rotate(-3deg)}
+.entry:active .silh{transform:scale(.98)}
+
+/* 文字压在左上 */
+.entry .label{
+  position:absolute; left:17px; top:17px; z-index:2;
+  font-size:15px; font-weight:800; line-height:1.25; letter-spacing:-.01em;
+}
+.entry .sub{
+  position:absolute; left:17px; top:57px; z-index:2;
+  font-size:11.5px; font-weight:600; opacity:.62;
+}
+
+/* 选中态 */
+.entry.on{background:var(--ink)}
+.entry.on .label,.entry.on .sub{color:#fff}
+.entry.on .sub{opacity:.55}
+.entry.on .silh{opacity:.28}
+
+/* ══ 布局 ══ */
+.cols{display:grid;grid-template-columns:326px 1fr;gap:16px;align-items:start}
+@media(max-width:860px){.cols{grid-template-columns:1fr}}
+
+/* ══ 输入面板 ══ */
+.panel{background:var(--card);border-radius:22px;padding:24px;box-shadow:0 2px 16px rgba(35,31,32,.055)}
+.panel h2{font-size:14.5px;font-weight:800;margin-bottom:3px}
+.panel .hint{font-size:12.5px;color:var(--ink-3);margin-bottom:19px}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12.5px;color:var(--ink-2);margin-bottom:6px;font-weight:600}
+.field input{
+  width:100%;font-size:16px;font-family:inherit;font-weight:700;
+  padding:12px 15px;border:1.5px solid var(--line);border-radius:14px;
+  background:#FAF8F4;transition:.15s;color:var(--ink);
+  font-variant-numeric:tabular-nums;
+}
+.field input:focus{outline:none;border-color:var(--yellow);background:#fff;box-shadow:0 0 0 3.5px rgba(255,199,44,.2)}
+
+/* 主按钮：仿小程序大按钮，带下沉阴影 */
+.cta{
+  width:100%;font-family:inherit;font-size:15px;font-weight:800;letter-spacing:.01em;
+  padding:15px;border-radius:15px;border:none;cursor:pointer;
+  background:var(--yellow);color:var(--ink);
+  box-shadow:0 4px 0 #D9A200, 0 8px 18px rgba(217,162,0,.28);
+  transition:transform .12s, box-shadow .12s;
+  margin-top:8px;
+}
+.cta:hover{background:#FFD24D}
+.cta:active{transform:translateY(3px);box-shadow:0 1px 0 #D9A200,0 3px 8px rgba(217,162,0,.25)}
+
+/* ══ 报告卡 ══ */
+.report{background:var(--card);border-radius:22px;padding:30px;box-shadow:0 2px 16px rgba(35,31,32,.055)}
+.rhd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:12px}
+.rhd .t{font-size:18px;font-weight:800;letter-spacing:-.01em}
+.rhd .s{font-size:13px;color:var(--ink-3);margin-top:3px}
+.badge{font-size:12.5px;font-weight:800;padding:8px 17px;border-radius:100px;white-space:nowrap;transition:.2s}
+
+.big{display:flex;align-items:baseline;gap:9px;margin-bottom:9px}
+.num{font-size:54px;font-weight:800;letter-spacing:-.035em;line-height:1;font-variant-numeric:tabular-nums;transition:.2s}
+.unit{font-size:14.5px;color:var(--ink-3);font-weight:600}
+
+.riskline{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;padding:7px 15px;border-radius:11px;margin-bottom:26px;font-weight:700}
+.riskline .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+@media(max-width:520px){.grid{grid-template-columns:1fr}}
+.cell{background:#FAF8F4;border-radius:16px;padding:15px 17px}
+.cell .k{font-size:11.5px;color:var(--ink-3);margin-bottom:4px;font-weight:600}
+.cell .v{font-size:23px;font-weight:800;font-variant-numeric:tabular-nums;transition:.2s}
+.cell.w .v{color:var(--red)}
+
+.barrow{margin-bottom:10px}
+.barlabel{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-3);margin-bottom:8px;font-weight:600}
+.bar{height:9px;background:#EFEDE7;border-radius:100px;overflow:hidden}
+.bar span{display:block;height:100%;border-radius:100px;transition:width .45s cubic-bezier(.3,0,.2,1),background .3s}
+
+.act{border-top:1px solid var(--line);margin-top:24px;padding-top:22px}
+.act h3{font-size:14px;font-weight:800;margin-bottom:12px}
+.item{display:flex;gap:11px;padding:11px 0;font-size:13.8px;line-height:1.62;color:#3D3935}
+.item:not(:last-child){border-bottom:1px solid #F7F5F0}
+.idx{
+  width:21px;height:21px;border-radius:8px;background:var(--yellow);
+  flex-shrink:0;font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;margin-top:2px;
+}
+
+/* ══ 页脚 ══ */
+.foot{margin-top:28px;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--ink-3);flex-wrap:wrap;gap:10px}
+.foot a{color:var(--ink-2);text-decoration:none;font-weight:600;border-bottom:1.5px solid var(--line);transition:.15s}
+.foot a:hover{color:var(--ink);border-color:var(--ink-3)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="brand">
+      <div class="mark">
+        <!-- 麦门剪影小标 -->
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><path d="M4 19h18c0-3.3-2.7-6-6-6H10c-3.3 0-6 2.7-6 6Z" fill="#231F20"/><path d="M5.5 12.2c.6-3 3.2-5.2 7.5-5.2s6.9 2.2 7.5 5.2H5.5Z" fill="#231F20"/><rect x="3" y="19.4" width="20" height="2.4" rx="1.2" fill="#231F20"/></svg>
+      </div>
+      <div>
+        <h1>麦麦积分体检</h1>
+        <div class="tagline">让每一分都不白白过期</div>
+      </div>
+    </div>
+    <div class="pill"><i></i>本地计算 · 数据不上传</div>
+  </div>
+
+  <!-- ══ 剪影入口 ══ -->
+  <div class="entries">
+    <button class="entry on" data-preset="danger">
+      <span class="label">过期预警</span>
+      <span class="sub">高危样例</span>
+      <svg class="silh" width="94" height="94" viewBox="0 0 94 94" fill="none">
+        <circle cx="47" cy="52" r="27" fill="#231F20"/>
+        <rect x="42" y="17" width="10" height="16" rx="5" fill="#231F20"/>
+        <path d="M47 76c0 8 9 9 9 15" stroke="#231F20" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <button class="entry" data-preset="safe">
+      <span class="label">健康账户</span>
+      <span class="sub">平稳样例</span>
+      <svg class="silh" width="100" height="100" viewBox="0 0 100 100" fill="none">
+        <path d="M8 62h84c0-12-9-21-21-21H29c-12 0-21 9-21 21Z" fill="#231F20"/>
+        <path d="M14 38c3-14 16-24 36-24s33 10 36 24H14Z" fill="#231F20"/>
+        <rect x="4" y="63" width="92" height="9" rx="4.5" fill="#231F20"/>
+        <ellipse cx="50" cy="32" rx="4" ry="2.6" fill="#FFC72C"/>
+        <ellipse cx="34" cy="35" rx="3.4" ry="2.2" fill="#FFC72C"/>
+        <ellipse cx="66" cy="35" rx="3.4" ry="2.2" fill="#FFC72C"/>
+      </svg>
+    </button>
+
+    <button class="entry" data-preset="empty">
+      <span class="label">从零开始</span>
+      <span class="sub">空仓样例</span>
+      <svg class="silh" width="96" height="96" viewBox="0 0 96 96" fill="none">
+        <path d="M16 44h64l-7 38a7 7 0 0 1-7 6H30a7 7 0 0 1-7-6l-7-38Z" fill="#231F20"/>
+        <path d="M32 44V32a16 16 0 0 1 32 0v12" stroke="#231F20" stroke-width="7" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <button class="entry" data-preset="lottery">
+      <span class="label">抽奖评估</span>
+      <span class="sub">看期望值</span>
+      <svg class="silh" width="98" height="98" viewBox="0 0 98 98" fill="none">
+        <rect x="10" y="46" width="78" height="42" rx="6" fill="#231F20"/>
+        <rect x="4" y="36" width="90" height="15" rx="4" fill="#231F20"/>
+        <rect x="44" y="36" width="10" height="52" fill="#FFC72C"/>
+        <path d="M49 36C40 22 26 19 22 26c-4 7 10 12 27 10Z" fill="#231F20"/>
+        <path d="M49 36c9-14 23-17 27-10 4 7-10 12-27 10Z" fill="#231F20"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="cols">
+
+    <!-- 输入 -->
+    <div class="panel">
+      <h2>输入积分数据</h2>
+      <div class="hint">麦当劳 App「我的 → 积分」可查</div>
+
+      <div class="field"><label>可用积分</label><input type="number" id="available" value="2400" min="0"></div>
+      <div class="field"><label>冻结积分</label><input type="number" id="frozen" value="100" min="0"></div>
+      <div class="field"><label>本月将过期</label><input type="number" id="expireNow" value="1100" min="0"></div>
+      <div class="field"><label>下月将过期</label><input type="number" id="expireNext" value="600" min="0"></div>
+
+      <button class="cta" onclick="render()">生成体检报告</button>
+    </div>
+
+    <!-- 报告 -->
+    <div class="report">
+      <div class="rhd">
+        <div>
+          <div class="t">账户体检报告</div>
+          <div class="s" id="date">—</div>
+        </div>
+        <div class="badge" id="badge">—</div>
+      </div>
+
+      <div class="big">
+        <span class="num" id="num">0</span>
+        <span class="unit">可用积分</span>
+      </div>
+
+      <div class="riskline" id="riskline">
+        <span class="dot"></span><span id="risktext">—</span>
+      </div>
+
+      <div class="grid">
+        <div class="cell"><div class="k">累计总额</div><div class="v" id="cTotal">0</div></div>
+        <div class="cell w"><div class="k">本月将过期</div><div class="v" id="cNow">0</div></div>
+        <div class="cell"><div class="k">下月将过期</div><div class="v" id="cNext">0</div></div>
+      </div>
+
+      <div class="barrow">
+        <div class="barlabel"><span>过期风险占比</span><span id="pct">0%</span></div>
+        <div class="bar"><span id="bar" style="width:0%"></span></div>
+      </div>
+
+      <div class="act">
+        <h3>建议动作</h3>
+        <div id="actions"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <span>基于麦当劳官方 MCP 能力开发 · 麦当劳程序员创意开发大赛参赛作品</span>
+    <a href="https://github.com/Loya-art/mcd-points-butler" target="_blank" rel="noopener">GitHub 仓库 →</a>
+  </div>
+
+</div>
+
+<script>
+const THEME = {
+  '灰': {badgeBg:'#F0EEEA', badgeFg:'#7A7570', bar:'#C0BCB6', lineBg:'#F0EEEA', lineFg:'#7A7570'},
+  '绿': {badgeBg:'#E4F3EA', badgeFg:'#1B7F4C', bar:'#2FA45F', lineBg:'#E4F3EA', lineFg:'#1B7F4C'},
+  '黄': {badgeBg:'#FFF3DF', badgeFg:'#B26A00', bar:'#F0A521', lineBg:'#FFF3DF', lineFg:'#B26A00'},
+  '红': {badgeBg:'#FDEBE7', badgeFg:'#E03B26', bar:'#E03B26', lineBg:'#FDEBE7', lineFg:'#E03B26'},
+};
+
+const num = v => Math.max(0, Math.round(Number(v) || 0));
+const fmt = n => n.toLocaleString('zh-CN');
+
+function evaluate(d){
+  const { available:avail, frozen, expireNow:exp, expireNext:expNext } = d;
+  const total = avail + frozen;
+  const ratio = avail > 0 ? exp / avail : 0;
+
+  let color, level;
+  if (avail === 0) { color='灰'; level='空仓'; }
+  else if (exp <= 0) { color='绿'; level='安全'; }
+  else if (ratio >= 0.3) { color='红'; level='高危'; }
+  else if (ratio >= 0.1) { color='黄'; level='注意'; }
+  else { color='绿'; level='安全'; }
+
+  const acts = [];
+  if (color === '灰') {
+    acts.push('当前没有可用积分，攒分后再来体检。');
+    acts.push('先领麦麦省优惠券，下单同时累积积分。');
+  } else if (color === '绿') {
+    acts.push(`积分状态健康，${fmt(avail)} 分可从容安排。`);
+    acts.push(expNext > 0
+      ? `下月 ${fmt(expNext)} 分将进入过期窗口，可提前规划兑换。`
+      : '暂无过期压力，可继续攒分兑换高价商品。');
+  } else if (color === '黄') {
+    acts.push(`本月 ${fmt(exp)} 分即将过期，建议优先使用。`);
+    acts.push(`浏览麦麦商城，挑所需积分不超过 ${fmt(exp)} 的商品直接兑换。`);
+  } else {
+    acts.push(`本月 ${fmt(exp)} 分即将过期，占可用积分 ${Math.round(ratio*100)}%，优先级最高。`);
+    acts.push('抽奖消耗：少量积分博取奖品，适合零散分快速清空。');
+    acts.push('商城兑换：按积分档位挑实物或券码，确定性更高。');
+  }
+  if (expNext > 0 && color !== '灰') acts.push(`下月还有 ${fmt(expNext)} 分到期，建议一并规划。`);
+
+  return { total, avail, exp, expNext, ratio, color, level, acts };
+}
+
+function render(){
+  const d = {
+    available: num(available.value),
+    frozen: num(frozen.value),
+    expireNow: num(expireNow.value),
+    expireNext: num(expireNext.value),
+  };
+  const r = evaluate(d), th = THEME[r.color];
+
+  document.getElementById('num').textContent = fmt(r.avail);
+  document.getElementById('cTotal').textContent = fmt(r.total);
+  document.getElementById('cNow').textContent = fmt(r.exp);
+  document.getElementById('cNext').textContent = fmt(r.expNext);
+  document.getElementById('pct').textContent = Math.round(r.ratio*100) + '%';
+
+  const bar = document.getElementById('bar');
+  bar.style.width = Math.min(100, Math.round(r.ratio*100)) + '%';
+  bar.style.background = th.bar;
+
+  const badge = document.getElementById('badge');
+  badge.textContent = r.level;
+  badge.style.background = th.badgeBg;
+  badge.style.color = th.badgeFg;
+
+  const rl = document.getElementById('riskline');
+  rl.style.background = th.lineBg;
+  rl.style.color = th.lineFg;
+  rl.querySelector('.dot').style.background = th.badgeFg;
+
+  document.getElementById('risktext').textContent = r.color === '灰'
+    ? '没有可用积分'
+    : (r.exp <= 0 ? '暂无积分即将过期'
+      : `${fmt(r.exp)} 分本月即将过期，占可用积分 ${Math.round(r.ratio*100)}%`);
+
+  document.getElementById('actions').innerHTML = r.acts
+    .map((a,i)=>`<div class="item"><span class="idx">${i+1}</span><span>${a}</span></div>`).join('');
+
+  const now = new Date();
+  document.getElementById('date').textContent =
+    `麦享会会员 · ${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+}
+
+const PRESETS = {
+  empty:   {available:0,    frozen:0,   expireNow:0,    expireNext:0},
+  safe:    {available:5200, frozen:0,   expireNow:0,    expireNext:300},
+  danger:  {available:2400, frozen:100, expireNow:1100, expireNext:600},
+  lottery: {available:900,  frozen:0,   expireNow:420,  expireNext:0},
+};
+
+document.querySelectorAll('.entry').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.entry').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    const p = PRESETS[btn.dataset.preset];
+    available.value = p.available;
+    frozen.value = p.frozen;
+    expireNow.value = p.expireNow;
+    expireNext.value = p.expireNext;
+    render();
+  });
+});
+
+['available','frozen','expireNow','expireNext'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', render);
+});
+
+render();
+</script>
+</body>
+</html>
