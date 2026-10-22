@@ -39,7 +39,7 @@ def health_report(account: dict) -> dict:
     expiring_next = _to_int(_pick(account, "nextMouthExpirePoint", 0))
     total = available + frozen
 
-    ratio = expiring / available if available > 0 else 0
+    ratio = min(expiring / available, 1.0) if available > 0 else 0
     if available == 0:
         level, color = "空仓", "灰"
     elif expiring <= 0:

@@ -22,6 +22,19 @@
 
 不用安装、不用 Token，打开就能改数字看实时体检结果。纯前端本地计算，数据不上传。
 
+## 快速体验（无需 Token）
+
+```bash
+# 账户体检（示例数据）
+python skill/scripts/points_health.py examples/account-danger.json
+
+# 抽奖蒙特卡洛模拟（10 万次抽样，输出期望值/ROI/中奖分布）
+python skill/scripts/lottery_sim.py examples/lottery-active.json
+
+# 单元测试（14 项，覆盖空仓/过期超额/异常字段等边界）
+python tests/test_points_health.py
+```
+
 ## 设计原则
 
 1. **取数交给 MCP，算术交给代码，表达交给 Agent**——账户数据全部来自麦当劳官方 MCP 工具；风险等级、期望价值等由本地确定性脚本计算，结果可复现、可核验，不靠大模型"感觉"。
