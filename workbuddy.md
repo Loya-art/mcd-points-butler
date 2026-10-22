@@ -30,3 +30,18 @@
 ## 4. 结论
 
 本项目从选题调研、规则解读、架构设计、代码编写到参赛材料准备，全程在 WorkBuddy 中由 Agent 模式完成，符合大赛"真实使用腾讯 WorkBuddy 智能体"的专项奖励要求。
+
+## 5. 真机联调记录（2026-10-22）
+
+使用真实 MCP Token 对麦当劳官方 MCP Server 完成集成测试：
+
+| 工具 | 结果 |
+|---|---|
+| initialize 握手 | ✅ protocolVersion 2025-03-26 |
+| now-time-info | ✅ 返回服务器时间 |
+| query-my-account | ✅ 返回麦享会积分账户（真实账户，0 积分新户） |
+| query-lottery-info | ✅ 返回抽奖活动结构（drawPoint / prizes 等） |
+| mall-points-products | ✅ 返回商城商品列表（spuName/point/status 等） |
+| points_health.py 自测 | ✅ 3 组数据全绿（真实空仓 / 模拟黄档 / 抽奖无概率兜底） |
+
+字段适配：脚本已对齐官方真实字段（availablePoint / currentMouthExpirePoint / drawPoint）。
